@@ -28,7 +28,14 @@ const index = (req, res, next) => {
 //SHOW
 const show = (req, res) => {
     const id = req.params.id;
-    const sql = "SELECT * FROM `movies` WHERE `id` = ?";
+    const sql = `
+      SELECT movies.*, CAST(AVG(reviews.vote) as FLOAT) as vote_avg
+      FROM movies
+      LEFT JOIN reviews
+      ON reviews.movie_id = movies.id
+      WHERE movies.id = ?
+    `;
+
     const sqlReviews = `
       SELECT reviews.* 
       FROM reviews
@@ -41,7 +48,7 @@ const show = (req, res) => {
         if (err) {
             return next(new Error("Internal Server Error"))
         }
-        if (results.length === 0) {
+        if (results.length === 0 || results[0].id === null) {
             return res.status(404).json({
                 status: "fail",
                 message: "Movie not found",
