@@ -29,7 +29,7 @@ const index = (req, res, next) => {
 const show = (req, res) => {
     const id = req.params.id;
     const sql = `
-      SELECT movies.*, CAST(AVG(reviews.vote) as FLOAT) as vote_avg
+      SELECT movies.*, CAST(AVG(reviews.vote) AS DECIMAL(10, 1)) as vote_avg
       FROM movies
       LEFT JOIN reviews
       ON reviews.movie_id = movies.id
