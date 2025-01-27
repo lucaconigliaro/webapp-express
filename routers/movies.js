@@ -6,6 +6,6 @@ const router = express.Router();
 router.get("/", moviesController.index);
 
 //SHOW
-router.get("/:id", moviesController.show);
+router.get("/:slug", moviesController.show);
 
 module.exports = router;

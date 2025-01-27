@@ -27,13 +27,13 @@ const index = (req, res, next) => {
 
 //SHOW
 const show = (req, res) => {
-    const id = req.params.id;
+    const slug = req.params.slug;
     const sql = `
       SELECT movies.*, CAST(AVG(reviews.vote) AS DECIMAL(10, 1)) as vote_avg
       FROM movies
       LEFT JOIN reviews
       ON reviews.movie_id = movies.id
-      WHERE movies.id = ?
+      WHERE movies.slug = ?
     `;
 
     const sqlReviews = `
@@ -41,10 +41,10 @@ const show = (req, res) => {
       FROM reviews
       JOIN movies
       ON movies.id = reviews.movie_id
-      WHERE movies.id = ?
+      WHERE movies.slug = ?
     `;
 
-    dbConnection.query(sql, [id], (err, results) => {
+    dbConnection.query(sql, [slug], (err, results) => {
         if (err) {
             return next(new Error("Internal Server Error"))
         }
@@ -54,7 +54,7 @@ const show = (req, res) => {
                 message: "Movie not found",
             });
         }
-        dbConnection.query(sqlReviews, [id], (err, reviews) => {
+        dbConnection.query(sqlReviews, [slug], (err, reviews) => {
             if (err) {
                 return next(new Error("Internal Server Error"))
             }
