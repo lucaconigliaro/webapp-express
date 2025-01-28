@@ -15,6 +15,9 @@ app.use(cors({
 // Static Files middleware
 app.use(express.static(`public`));
 
+//Json Middleware
+app.use(express.json());
+
 // Router Movies
 app.use("/movies", moviesRouter);
 
