@@ -72,21 +72,38 @@ const show = (req, res) => {
 //REVIEW
 const storeReview = (req, res, next) => {
     const id = req.params.id;
-    const { name, vote, text} = req.body;
-    console.log(name, vote, text)
+    const { name, vote, text } = req.body;
 
-    const sql = `
-      INSERT INTO reviews(movie_id, name, vote, text)
-      VALUE (?, ?, ?, ?)
+    const movieSql = `
+      SELECT *
+      FROM movies
+      WHERE id = ?
     `;
 
-    dbConnection.query(sql, [id, name, vote, text], (err) => {
-        if(err) {
-            return next(new Error("Internal server error"))
+    dbConnection.query(movieSql, [id], (err, results) => {
+        if (err) {
+            return next(new Error("Internal server error")); 
         }
-        res.status(201).json({
-            status: "succes",
-            message: "Review added"
+        if (results.length === 0) {
+            return res.status(404).json({
+                status: "fail",
+                message: "Movie not found"
+            }); 
+        }
+
+        const sql = `
+          INSERT INTO reviews(movie_id, name, vote, text)
+          VALUE (?, ?, ?, ?)
+        `;
+
+        dbConnection.query(sql, [id, name, vote, text], (err) => {
+            if (err) {
+                return next(new Error("Internal server error")); 
+            }
+            res.status(201).json({
+                status: "success",
+                message: "Review added"
+            });
         });
     });
 };
