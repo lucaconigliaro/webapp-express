@@ -74,6 +74,30 @@ const storeReview = (req, res, next) => {
     const id = req.params.id;
     const { name, vote, text } = req.body;
 
+    //Validation vote
+    if (isNaN(vote) || vote < 0 || vote > 5) {
+        return res.status(400).json({
+            status: "fail",
+            message: "The rating must be between 0 and 5",
+        });
+    }
+
+    //Valitadion name
+    if (name.length <= 3) {
+        return res.status(400).json({
+            status: "fail",
+            message: "The name must be longer",
+        });
+    }
+
+    //Validation text
+    if (text && text.length > 0 && text.length < 5) {
+        return res.status(400).json({
+            status: "fail",
+            message: "The text must be longer",
+        });
+    }
+
     const movieSql = `
       SELECT *
       FROM movies
@@ -82,13 +106,13 @@ const storeReview = (req, res, next) => {
 
     dbConnection.query(movieSql, [id], (err, results) => {
         if (err) {
-            return next(new Error("Internal server error")); 
+            return next(new Error("Internal server error"));
         }
         if (results.length === 0) {
             return res.status(404).json({
                 status: "fail",
                 message: "Movie not found"
-            }); 
+            });
         }
 
         const sql = `
@@ -98,7 +122,7 @@ const storeReview = (req, res, next) => {
 
         dbConnection.query(sql, [id, name, vote, text], (err) => {
             if (err) {
-                return next(new Error("Internal server error")); 
+                return next(new Error("Internal server error"));
             }
             res.status(201).json({
                 status: "success",
