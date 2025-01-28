@@ -69,7 +69,30 @@ const show = (req, res) => {
     });
 };
 
+//REVIEW
+const storeReview = (req, res, next) => {
+    const id = req.params.id;
+    const { name, vote, text} = req.body;
+    console.log(name, vote, text)
+
+    const sql = `
+      INSERT INTO reviews(movie_id, name, vote, text)
+      VALUE (?, ?, ?, ?)
+    `;
+
+    dbConnection.query(sql, [id, name, vote, text], (err) => {
+        if(err) {
+            return next(new Error("Internal server error"))
+        }
+        res.status(201).json({
+            status: "succes",
+            message: "Review added"
+        });
+    });
+};
+
 module.exports = {
     index,
     show,
+    storeReview
 };
